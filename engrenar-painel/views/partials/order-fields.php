@@ -1,0 +1,7 @@
+<label>Atividade<input required name="titulo" maxlength="150" value="<?= h($values['titulo']??'') ?>" placeholder="Título da ordem"></label>
+<label>Ativo<select name="id_maquina" required><option value="">Selecione o ativo</option><?php foreach($machines as $m): ?><option value="<?= $m['id_maquina'] ?>" <?= ($m['id_maquina']==($values['id_maquina']??$machine))?'selected':'' ?>><?= h($m['tag'].' · '.$m['nome']) ?></option><?php endforeach; ?></select></label>
+<div class="two-fields"><label>Tipo de manutenção<select name="id_tipo_manutencao" required><option value="">Selecione</option><?php foreach($types as $t): ?><option value="<?= $t['id_tipo_manutencao'] ?>" <?= $t['id_tipo_manutencao']==($values['id_tipo_manutencao']??'')?'selected':'' ?>><?= h($t['nome']) ?></option><?php endforeach; ?></select></label>
+<label>Prioridade<select name="prioridade"><?php foreach(WorkOrder::PRIORITIES as $p): ?><option value="<?= $p ?>" <?= $p===($values['prioridade']??'media')?'selected':'' ?>><?= h(labelOf($p)) ?></option><?php endforeach; ?></select></label></div>
+<?php if(Auth::canManage()): ?><label>Responsável<select name="id_responsavel"><option value="">A definir</option><?php foreach($users as $u): ?><option value="<?= $u['id_usuario'] ?>" <?= $u['id_usuario']==($values['id_responsavel']??'')?'selected':'' ?>><?= h($u['nome']) ?></option><?php endforeach; ?></select></label><?php endif; ?>
+<label>Descrição <small>(opcional)</small><textarea name="descricao" rows="3"><?= h($values['descricao']??'') ?></textarea></label>
+

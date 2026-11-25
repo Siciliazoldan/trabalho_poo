@@ -1,0 +1,2 @@
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#102741"><title><?= h($pageTitle) ?> · Engrenar</title>
+<link rel="stylesheet" href="<?= ENGRENAR_ASSETS ?>css/style.css"><script defer src="<?= ENGRENAR_ASSETS ?>js/app.js"></script>

@@ -1,0 +1,32 @@
+GUIA DE EDIÇÃO DO ENGRENAR
+Abra C:\xampp\htdocs\engrenar-painel no VS Code para editar a versão exibida pelo Apache.
+Use Ctrl+P para abrir um arquivo pelo nome. Salve com Ctrl+S e atualize a página.
+
+NOME DA INDÚSTRIA NO MENU
+Em app/core/Demo.php, procure Engrenar Aços Especiais. Troque apenas o texto entre aspas em razao_social.
+app/models/User.php leva esse valor para o campo empresa do perfil.
+views/partials/header.php mostra empresa em negrito. O rótulo Indústria pode ser editado nesse mesmo arquivo.
+Em public/assets/css/style.css, .workspace controla esse bloco e .sidebar controla a barra lateral.
+
+TELAS
+views/login.php — formulário, textos de entrada e ajuda.
+views/dashboard.php — indicadores e disposição dos cartões da gestão.
+views/field.php — página inicial de mecânicos e eletricistas.
+views/os.php — filtros, detalhes e formulários de ordens de serviço.
+views/assets.php — consulta de ativos por nome, TAG ou linha.
+views/library.php — consulta e formulários da biblioteca.
+views/partials/asset-card.php — conteúdo de cada cartão de ativo.
+views/partials/order-table.php — colunas da lista de OS.
+views/partials/header.php — menu lateral, nome da indústria, perfil e cabeçalho.
+views/partials/footer.php — rodapé das páginas internas.
+
+DADOS E COMPORTAMENTO
+app/core/Demo.php — usuários, cargos, empresa, setores, linhas e dados iniciais.
+Mudanças nos exemplos criados por init() aparecem em uma sessão nova. Para conferir, use uma janela anônima nova.
+app/core/Auth.php — agrupamento de cargos em gestão e operação.
+app/core/format.php — marca, ícones e apresentação de status e TAGs.
+app/models/ — cálculos do painel, consultas e alterações de OS, ativos e modelos.
+app/controllers/ — recebe ações dos formulários, verifica campos e escolhe qual tela exibir.
+public/assets/css/style.css — cores, fontes, tamanhos e espaçamentos. As cores principais ficam em :root.
+public/assets/js/app.js — interações como abrir janelas, mostrar a senha e expandir o menu no celular.
+index.php — ponto de entrada no XAMPP. public/index.php inicia a sessão e encaminha cada rota ao controlador.

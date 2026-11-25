@@ -1,0 +1,1 @@
+<!doctype html><html lang="pt-BR"><head><?php $pageTitle='Acesso'; require __DIR__.'/partials/head.php'; ?></head><body class="message-page"><main class="paper message-card"><?= brand() ?><h1><?= h($message) ?></h1><a class="button" href="index.php">Voltar ao Engrenar</a></main></body></html>

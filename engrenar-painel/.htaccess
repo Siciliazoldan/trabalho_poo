@@ -1,0 +1,7 @@
+Options -Indexes
+DirectoryIndex index.php
+RewriteEngine On
+RewriteRule ^(?:app|config|views|bin|backend|database|docs)(?:/|$) - [F,L]
+<FilesMatch "^(?:iniciar|definir-senha|README|\.git)">
+    Require all denied
+</FilesMatch>

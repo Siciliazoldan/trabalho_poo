@@ -1,0 +1,5 @@
+<?php $pageTitle='Meu trabalho';require __DIR__.'/partials/header.php'; ?>
+<div class="page-heading"><div><p class="overline"><i></i> Operação de campo</p><h1>Meu trabalho</h1><p>Olá, <?= h(explode(' ',$who['nome'])[0]) ?>. Confira suas ordens pendentes e a condição das máquinas.</p></div></div>
+<section class="paper flush"><div class="panel-title"><h2>Minhas ordens pendentes <span class="count"><?= count($orders) ?></span></h2><a class="link" href="<?= h(url('os',['mine'=>1])) ?>">Ver minhas OS</a></div><?php require __DIR__.'/partials/order-table.php'; ?></section>
+<div class="section-line"><h2>Ativos da indústria</h2><a class="link" href="<?= url('ativos') ?>">Ver todos</a></div><div class="asset-grid"><?php foreach(array_slice($assets,0,4) as $a) require __DIR__.'/partials/asset-card.php';if(!$assets): ?><p class="empty">Nenhum ativo cadastrado.</p><?php endif; ?></div>
+<?php require __DIR__.'/partials/footer.php'; ?>

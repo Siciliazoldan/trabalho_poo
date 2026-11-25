@@ -1,0 +1,3 @@
+<div class="table-wrap"><table><thead><tr><th>Ordem / atividade</th><th>TAG do ativo</th><th>Prioridade</th><th>Status</th></tr></thead><tbody>
+<?php foreach($orders as $o): ?><tr><td><a class="table-link" href="<?= h(url('os',['id'=>$o['id_os']])) ?>"><small><?= h($o['numero']) ?></small><?= h($o['titulo']) ?></a></td><td><?= refTag($o['tag']) ?></td><td><?= badge($o['prioridade']) ?></td><td><?= badge($o['status']) ?></td></tr><?php endforeach; ?>
+<?php if (!$orders): ?><tr><td colspan="4" class="empty">Nenhuma ordem de serviço para esta seleção.</td></tr><?php endif; ?></tbody></table></div>
