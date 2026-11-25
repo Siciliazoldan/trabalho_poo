@@ -1,10 +1,4 @@
-DROP DATABASE IF EXISTS engrenar;
-CREATE DATABASE engrenar
-  CHARACTER SET utf8mb4
-  COLLATE utf8mb4_unicode_ci;
-USE engrenar;
-
-
+-- Execute em uma base vazia selecionada no cliente MySQL.
 -- segmento industrial
 CREATE TABLE segmento_industrial (
   id_segmento         BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -135,7 +129,7 @@ CREATE TABLE maquina_biblioteca (
 ) ENGINE=InnoDB;
 
 
--- tabela associativa(vincula maquina x ao segmento y) 
+-- tabela associativa(vincula maquina x ao segmento y)
 CREATE TABLE segmento_maquina_biblioteca (
   id_segmento            BIGINT UNSIGNED NOT NULL,
   id_maquina_biblioteca  BIGINT UNSIGNED NOT NULL,
@@ -177,7 +171,7 @@ CREATE TABLE peca_pai_biblioteca (
     ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
-   
+
 -- 4. ESTOQUE
 CREATE TABLE peca (
   id_peca        BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -240,7 +234,7 @@ CREATE TABLE maquina (
   tag                    VARCHAR(50) NOT NULL,
   nome                   VARCHAR(120) NOT NULL,
   qr_code                VARCHAR(100) NULL,
-  criticidade            ENUM('baixa','media','alta','critica') NOT NULL DEFAULT 'media', 
+  criticidade            ENUM('baixa','media','alta','critica') NOT NULL DEFAULT 'media',
   status                 ENUM('operando','parada','em_manutencao','desativada') NOT NULL DEFAULT 'operando',
   created_at             TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at             TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -380,191 +374,3 @@ CREATE TABLE historico_geral (
 
 
 -- =====================================================================
--- SCRIPT DE POVOAMENTO COMPLETO - STARTUP ENGRENAR
--- =====================================================================
-
-USE engrenar;
-
--- 1. CARGOS (Necessário antes de cadastrar usuários)
-INSERT INTO cargo (id_cargo, nome, descricao) VALUES
-  (1, 'Gestor', 'Acesso total à indústria'),
-  (2, 'Engenheiro de manutenção', 'Gerencia OS, equipe e planejamento'),
-  (3, 'Técnico de manutenção', 'Executa ordens de serviço'),
-  (4, 'Almoxarife', 'Controla estoque e movimentações');
-
--- 2. TIPOS DE MANUTENÇÃO
-INSERT INTO tipo_manutencao (id_tipo_manutencao, nome, descricao) VALUES
-  (1, 'Preventiva', 'Programada para evitar falhas'),
-  (2, 'Corretiva', 'Executada após a falha'),
-  (3, 'Preditiva', 'Baseada em monitoramento de condição'),
-  (4, 'Inspeção', 'Verificação periódica sem intervenção');
-
--- 3. SEGMENTOS INDUSTRIAIS E INDÚSTRIA
-INSERT INTO segmento_industrial (id_segmento, nome, atividade_economica, descricao) VALUES
-  (1, 'Metalurgia e Siderurgia', 'Fabricação de produtos de metal', 'Indústrias de transformação de metais pesados'),
-  (2, 'Automotivo', 'Fabricação de veículos automotores', 'Montadoras e autopeças');
-
-INSERT INTO industria (id_industria, id_segmento, razao_social, cnpj, cnae, inscricao_estadual, ativo) VALUES
-  (1, 1, 'Engrenar Aços Especiais S.A.', '12345678000199', '2411-3/00', '123456789', 1);
-
--- 4. ESTRUTURA FÍSICA (Unidade, Setor, Linha de Produção)
-INSERT INTO unidade (id_unidade, id_industria, nome, endereco) VALUES
-  (1, 1, 'Planta Ponta Grossa - Matriz', 'Rodovia do Mate, km 100');
-
-INSERT INTO setor (id_setor, id_unidade, nome) VALUES
-  (1, 1, 'Fundição e Laminação'),
-  (2, 1, 'Usinagem de Precisão');
-
-INSERT INTO linha_producao (id_linha, id_setor, nome) VALUES
-  (1, 1, 'Linha de Laminação a Quente 01'),
-  (2, 2, 'Centro de Usinagem CNC 03');
-
--- 5. BIBLIOTECA DE MÁQUINAS (Diferencial do Engrenar)
-INSERT INTO fabricante (id_fabricante, nome) VALUES
-  (1, 'Siemag Demag'),
-  (2, 'Mazak Corporation');
-
-INSERT INTO maquina_biblioteca (id_maquina_biblioteca, id_fabricante, modelo, tag, descricao) VALUES
-  (1, 1, 'Laminador Universal 4 High', 'BIB-LAM-01', 'Template padrão para laminadores de chapas'),
-  (2, 2, 'CNC Vertical Variaxis', 'BIB-CNC-02', 'Template para centros de usinagem multieixos');
-
-INSERT INTO segmento_maquina_biblioteca (id_segmento, id_maquina_biblioteca) VALUES
-  (1, 1),
-  (2, 2);
-
-INSERT INTO template_maquina (id_template, id_maquina_biblioteca, nome, descricao) VALUES
-  (1, 1, 'Template Laminador Principal', 'Estrutura mecânica base do laminador'),
-  (2, 2, 'Template CNC Padrão', 'Estrutura base do centro de usinagem');
-
-INSERT INTO peca_pai_biblioteca (id_componente, id_template, nome, descricao, quantidade, criticidade, vida_util) VALUES
-  (1, 1, 'Cilindro de Laminação', 'Cilindro de trabalho principal', 2, 'alta', 5000),
-  (2, 2, 'Eixo Árvore (Spindle)', 'Eixo principal de rotação do CNC', 1, 'critica', 8000);
-
--- 6. ESTOQUE E PEÇAS
-INSERT INTO peca (id_peca, id_industria, codigo, nome, descricao, unidade_medida, valor_unitario) VALUES
-  (1, 1, 'PEC-001', 'Rolamento de Rolos Cilíndricos', 'Rolamento industrial blindado', 'un', 1500.00),
-  (2, 1, 'PEC-002', 'Correia de Transmissão V', 'Correia de alta resistência', 'un', 120.50);
-
-INSERT INTO estoque (id_estoque, id_industria, nome, localizacao) VALUES
-  (1, 1, 'Almoxarifado Central', 'Galpão 01 - Corredor B');
-
-INSERT INTO item_estoque (id_item_estoque, id_peca, id_estoque, quantidade, estoque_minimo, estoque_maximo) VALUES
-  (1, 1, 1, 10, 2, 20),
-  (2, 2, 1, 25, 5, 50);
-
--- 7. ATIVOS REAIS (Máquinas instaladas na fábrica)
-INSERT INTO maquina (id_maquina, id_industria, id_linha, id_maquina_biblioteca, tag, nome, qr_code, criticidade, status) VALUES
-  (1, 1, 1, 1, 'MQ-LAM-01', 'Laminador Principal A', 'QR-ENG-99881', 'alta', 'operando'),
-  (2, 1, 2, 2, 'MQ-CNC-05', 'Centro de Usinagem 05', 'QR-ENG-99882', 'critica', 'operando');
-
-INSERT INTO peca_maq (id_peca_maq, id_maquina, id_peca_pai_biblioteca, id_peca, nome, numero_serie) VALUES
-  (1, 1, 1, 1, 'Cilindro Setor A', 'SN-9981-A'),
-  (2, 2, 2, 2, 'Spindle CNC 05', 'SN-5542-X');
-
--- 8. USUÁRIOS (Equipe da Indústria)
-INSERT INTO usuario (id_usuario, id_industria, id_cargo, id_setor, nome, matricula, email, senha_hash, ativo) VALUES
-  (1, 1, 1, 1, 'Carlos Roberto', '1001', 'carlos.gestor@engrenar.invalid', 'HASH_SEGUR1', 1),
-  (2, 1, 2, 1, 'Roberto Gomes', '1002', 'roberto.engenheiro@engrenar.invalid', 'HASH_SEGUR2', 1),
-  (3, 1, 3, 2, 'Marcos Aurelio', '1003', 'marcos.mecanico@engrenar.invalid', 'HASH_SEGUR3', 1),
-  (4, 1, 4, 1, 'Ana Silva', '1004', 'ana.analista@engrenar.invalid', 'HASH_SEGUR4', 1);
-
--- 9. MANUTENÇÃO (Ordens de Serviço)
-INSERT INTO ordem_servico (id_os, id_industria, numero, id_maquina, id_peca_maq, id_tipo_manutencao, id_solicitante, id_responsavel, titulo, descricao, status, prioridade, data_abertura) VALUES
-  (1, 1, 'OS-2026-0001', 1, 1, 1, 2, 3, 'Lubrificação e Inspeção Preventiva', 'Verificar folgas no cilindro de laminação', 'em_andamento', 'alta', '2026-11-17 08:00:00');
-
--- 10. MOVIMENTAÇÃO DE ESTOQUE
-INSERT INTO mov_estoque (id_mov_estoque, id_item_estoque, id_usuario, id_os, tipo_movim, quantidade, motivo, data_hora) VALUES
-  (1, 1, 4, 1, 'saida', 1, 'Substituição preventiva em OS-2026-0001', '2026-11-17 09:30:00');
-
-
--- TESTES-------------
-
--- TESTE DE ESTRUTURA:
-USE engrenar;
-DESCRIBE peca;
-SELECT TABLE_NAME, COLUMN_NAME, CONSTRAINT_NAME 
-FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE 
-WHERE TABLE_SCHEMA = 'engrenar' 
-  AND TABLE_NAME = 'industria' 
-  AND CONSTRAINT_NAME LIKE '%uq%';
-  
-
--- TESTE DE RESTRIÇÕES
-USE engrenar;
-START TRANSACTION;
--- Tentativa inválida: preço negativo (Deve falhar com Erro 3819)
-INSERT INTO peca (id_industria, codigo, nome, unidade_medida, valor_unitario) 
-VALUES (1, 'ERR-01', 'Peça com Erro', 'un', -10.00);
-ROLLBACK;
-
--- TESTE DE TRIGGERS
-USE engrenar;
-START TRANSACTION;
-SELECT id_item_estoque, quantidade FROM item_estoque WHERE id_item_estoque = 1;
-INSERT INTO mov_estoque (id_item_estoque, id_usuario, id_os, tipo_movim, quantidade, motivo) 
-VALUES (1, 4, 1, 'saida', 2, 'Teste de integridade de movimentação');
-SELECT 'Movimentação aplicada com sucesso' AS status_teste;
-ROLLBACK;
-
-
--- TESTE DE TRANSAÇÕES:
-USE engrenar;
-START TRANSACTION;
-UPDATE maquina SET status = 'em_manutencao' WHERE id_maquina = 1;
-INSERT INTO ordem_servico (id_industria, numero, id_maquina, id_tipo_manutencao, id_solicitante, titulo, status, prioridade) 
-VALUES (1, 'OS-TEST-99', 1, 1, 2, 'Manutenção Corretiva Urgente', 'aberta', 'alta');
-ROLLBACK;
-SELECT id_maquina, status FROM maquina WHERE id_maquina = 1;
-
-
--- TESTE DE QUALIDADE DE DADOS: PFV N DEVE RETORNAR NADAAAA
-USE engrenar;
-SELECT id_os, numero, data_abertura, data_fechamento 
-FROM ordem_servico 
-WHERE data_fechamento IS NOT NULL 
-  AND data_fechamento < data_abertura;
-  
-
--- TESTE DE DESEMPENHO:  
-USE engrenar;
-EXPLAIN 
-SELECT p.codigo, p.nome, ie.quantidade, ie.estoque_minimo
-FROM item_estoque ie
-JOIN peca p ON p.id_peca = ie.id_peca
-WHERE ie.quantidade <= ie.estoque_minimo;
-
-USE engrenar;
-
-
--- Segmento ind. cadastrar: 
-INSERT INTO segmento_industrial (nome, atividade_economica, descricao)
-VALUES ('Alimentício', 'Fabricação de produtos alimentícios', 'Segmento industrial');
-
-
-INSERT INTO industria (id_segmento, razao_social, cnpj, ativo)
-VALUES (1, 'Mars Petcare', '12345678000199', 1);
-
--- Cadastro do cargo do usuario:
-INSERT INTO cargo (nome, descricao) VALUES
-('Gestor de Manutenção', 'Acesso completo, KPIs, gráficos e 21 tabelas'),
-('Mecânico Industrial', 'Visão de campo: OS, ativos com QR Code e estoque');
-
--- Teste do crud
-SELECT id_maquina, tag, nome, criticidade, status
-FROM engrenar.maquina
-WHERE tag = 'VIDEOTESTE-001';
-
--- join das tabelas
-SELECT
-    m.id_maquina,
-    m.tag AS tag_maquina,
-    m.nome AS maquina,
-    o.numero AS numero_os,
-    o.titulo AS servico,
-    o.status AS status_os
-FROM engrenar.maquina AS m
-JOIN engrenar.ordem_servico AS o
-    ON o.id_maquina = m.id_maquina
-   AND o.id_industria = m.id_industria
-WHERE m.tag = 'VIDEOTESTE-001';
-
